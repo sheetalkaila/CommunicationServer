@@ -4,7 +4,7 @@ import java.net.*;
 public class Server{
    public static void main(String[] args)throws Exception{
        System.out.println("Server Signing ON");
-       ServerSocket ss = new ServerSocket(9081);
+       ServerSocket ss = new ServerSocket(9083);
        Socket soc = ss.accept();
        System.out.println("Server Says Connection Established");
        BufferedReader nis = new BufferedReader(
