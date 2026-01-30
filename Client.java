@@ -17,6 +17,12 @@ public class Client{
                                 )
                            ),true
                          );
+        BufferedReader nis = new BufferedReader(
+                             new InputStreamReader(
+                               soc.getInputStream()
+                             )
+                           );
+
        JFrame f1 = new JFrame("GUI Client");
        JButton b1 = new JButton("Ok");
        JTextArea ta = new JTextArea(10,10);
@@ -33,6 +39,14 @@ public class Client{
        L1 l1 = new L1(tf,ta,nos);
        b1.addActionListener(l1);
        tf.addActionListener(l1);
+       String str = nis.readLine();
+
+       while(!str.equals("End")){
+           ta.append(str + "\n");
+           str = nis.readLine();
+       }
+
+       System.out.println("Client Singing OFF");
    } 
 }
 
@@ -51,7 +65,6 @@ class L1 implements ActionListener{
    @Override
    public void actionPerformed(ActionEvent e) {
        String str =  tf.getText();
-       ta.append(str + "\n");
        tf.setText("");
        nos.println(str);
        if( str.equals("End")){

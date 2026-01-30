@@ -12,11 +12,23 @@ public class Server{
                                soc.getInputStream()
                              )
                            );
+
+        PrintWriter nos = new PrintWriter(
+                           new BufferedWriter(
+                                new OutputStreamWriter(
+                                  soc.getOutputStream()
+                                )
+                           ),true
+                         );
+
        String str = nis.readLine();
+
        while(!str.equals("End")){
            System.out.println("Server Recieved " + str);
+           nos.println("Server Ack " + str);
            str = nis.readLine();
        }
+       nos.println("End");
        System.out.println("Server Singing OFF");
    }
 }
