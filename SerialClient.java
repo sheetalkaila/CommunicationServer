@@ -1,3 +1,4 @@
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -9,55 +10,56 @@ public class SerialClient {
     public static void main(String[] args) throws Exception {
 
         System.out.println("Client Signing ON");
-
-        JFrame f1 = new JFrame("GUI Echo Client");
-
-        JTextArea ta = new JTextArea();
-        ta.setEditable(false);
-
-        JTextField tf = new JTextField(15);
-        JButton b1 = new JButton("Send");
-
-        JPanel p = new JPanel();
-        p.add(tf);
-        p.add(b1);
-
-        f1.add(ta);
-        f1.add(BorderLayout.SOUTH, p);
-
-        f1.setSize(400, 400);
-        f1.setVisible(true);
-        f1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         Socket soc = new Socket("127.0.0.1", 9085);
+        Connection conn = new Connection(soc);
+        PrintWriter nos = conn.getNos();
+        BufferedReader nis = conn.getNis();
+        ChatWindow cw = new ChatWindow(conn);
 
-        PrintWriter nos = new PrintWriter(
-                new BufferedWriter(
-                        new OutputStreamWriter(
-                                soc.getOutputStream()
-                        )
-                ),
-                true
-        );
-
-        BufferedReader nis = new BufferedReader(
-                new InputStreamReader(
-                        soc.getInputStream()
-                )
-        );
-
-        L1 l1 = new L1(ta, tf, nos);
-        b1.addActionListener(l1);
-        tf.addActionListener(l1);
-
+       
         String str = nis.readLine();
 
         while (!str.equals("End")) {
-            ta.append(str + "\n");
+            cw.getTa().append(str + "\n");
             str = nis.readLine();
         }
 
-        ta.append("\nClient Signing Off\n");
+        cw.getTa().append("\nClient Signing Off\n");
+    }
+}
+
+class ChatWindow extends JFrame {
+
+    JTextArea ta;
+    JTextField tf;
+    JButton b1;
+    JPanel p;
+
+    public ChatWindow(Connection conn) {
+        ta = new JTextArea();
+        ta.setEditable(false);
+        setTitle("GUI Echo Client");
+        tf = new JTextField(15);
+        b1 = new JButton("Send");
+        ActionListener al = new L1(ta, tf, conn.getNos());
+        b1.addActionListener(al);
+        tf.addActionListener(al);
+        p = new JPanel();
+        p.add(tf);
+        p.add(b1);
+        add(ta);
+        add(BorderLayout.SOUTH, p);
+        setSize(400, 400);
+        setVisible(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    public JTextArea getTa() {
+        return ta;
+    }
+
+    public JTextField getTf() {
+        return tf;
     }
 }
 
@@ -84,5 +86,34 @@ class L1 implements ActionListener {
             nos.close();
             System.exit(0);
         }
+    }
+}
+
+class Connection {
+
+    Socket soc;
+    PrintWriter nos;
+    BufferedReader nis;
+
+    public Connection(Socket soc) throws Exception {
+        this.soc = soc;
+        nos = new PrintWriter(soc.getOutputStream(), true);
+        nis = new BufferedReader(
+                new InputStreamReader(
+                        soc.getInputStream()
+                )
+        );
+    }
+
+    public Socket getsoc() {
+        return soc;
+    }
+
+    public PrintWriter getNos() {
+        return nos;
+    }
+
+    public BufferedReader getNis() {
+        return nis;
     }
 }
