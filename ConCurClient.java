@@ -12,26 +12,30 @@ public class ConCurClient{
        Socket soc = new Socket("127.0.0.1",9090);
        Connection conn = new Connection(soc);
        BufferedReader nis = conn.getNis();
-       ChatWindow cw = new ChatWindow(conn);
+       
+       String username = JOptionPane.showInputDialog("Please Enter you Username");
+       conn.getNos().println(username);
+
+       ChatWindow cw = new ChatWindow(conn,username);
+       
        String str = nis.readLine();
         while(!str.equals("End")){
            cw.getTa().append(str + "\n");
            str = nis.readLine();
        }
-
        System.out.println("Client Singing OFF");
+       Thread.sleep(1000);
+       soc.close();
    } 
 }
 
 class L1 implements ActionListener{
   
    private JTextField tf;
-   private JTextArea ta;
    private PrintWriter nos;
 
-   L1(JTextField tf, JTextArea ta,PrintWriter nos){
+   public L1(JTextField tf,PrintWriter nos){
        this.tf = tf;
-       this.ta = ta;
        this.nos = nos;
    }
 
@@ -40,10 +44,6 @@ class L1 implements ActionListener{
        String str =  tf.getText();
        tf.setText("");
        nos.println(str);
-       if( str.equals("End")){
-            nos.close();
-            System.exit(1);
-       }
    }
   
 }
@@ -55,13 +55,13 @@ class ChatWindow extends JFrame{
     JButton b1;
     JPanel p;
 
-    public ChatWindow(Connection conn){
-       super("GUI Client"); 
+    public ChatWindow(Connection conn,String username){
+       super(username+"'s Chat"); 
        ta = new JTextArea();
        ta.setEditable(false);
        tf = new JTextField(15);
        b1 = new JButton("Send");
-       ActionListener al = new L1(tf,ta,conn.getNos());
+       ActionListener al = new L1(tf,conn.getNos());
        b1.addActionListener(al);
        tf.addActionListener(al);
        p = new JPanel();
