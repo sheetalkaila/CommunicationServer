@@ -49,24 +49,6 @@ class MessageQueue<T> {
         }
         return al.remove(0);
     }
-
-    synchronized public void print() {
-        for (T item : al) {
-            System.out.println("--> " + item);
-        }
-    }
-
-    @Override
-    synchronized public String toString() {
-
-        String str = "";
-
-        for (T item : al) {
-            str += "::" + item;
-        }
-
-        return str;
-    }
 }
 
 class Connection extends Thread {
@@ -87,7 +69,7 @@ class Connection extends Thread {
 
             BufferedReader nis = new BufferedReader(new InputStreamReader(soc.getInputStream()));
             PrintWriter nos = new PrintWriter(soc.getOutputStream(), true);
-            VartalapServer.al.add(nos);
+            ChatServer.al.add(nos);
 
             Username = nis.readLine();
             System.out.println("Client name: " + Username);
@@ -95,12 +77,12 @@ class Connection extends Thread {
             String message = nis.readLine();
             while (!message.equals("End")) {
                 String fullMessage = Username + " : " + message;
-                VartalapServer.mq.enqueue(fullMessage);
+                ChatServer.mq.enqueue(fullMessage);
                 System.out.println("Server Recieved " + fullMessage);
                 message = nis.readLine();
             }
             nos.println("End");
-            VartalapServer.al.remove(nos);
+            ChatServer.al.remove(nos);
             System.out.println(
                     "Connection with " + soc.getInetAddress().getHostAddress() + " Terminated");
 
@@ -117,8 +99,8 @@ class MessageDispatcher extends Thread {
     public void run() {
         while (true) {
             try {
-                String message = VartalapServer.mq.dequeue();
-                for (PrintWriter p : VartalapServer.al) {
+                String message = ChatServer.mq.dequeue();
+                for (PrintWriter p : ChatServer.al) {
                     p.println(message);
                 }
             } catch (Exception e) {
