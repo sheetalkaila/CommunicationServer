@@ -9,23 +9,28 @@ public class VartalapClient{
    public static void main(String[] args) throws Exception{
 
        System.out.println("Client Signing ON");
-       Socket soc = new Socket("127.0.0.1",9090);
-       Connection conn = new Connection(soc);
-       BufferedReader nis = conn.getNis();
-       
-       String username = JOptionPane.showInputDialog("Please Enter you Username");
-       conn.getNos().println(username);
 
-       ChatWindow cw = new ChatWindow(conn,username);
-       
-       String str = nis.readLine();
-        while(!str.equals("End")){
-           cw.getTa().append(str + "\n");
-           str = nis.readLine();
+       try {
+           Socket soc = new Socket("127.0.0.1",9090);
+           Connection conn = new Connection(soc);
+           conn.start();
+           System.out.println("Client says connection established");
+
+           BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+           System.out.print("Enter your name: ");
+           String name = r.readLine();
+           conn.getNos().println(name);
+
+           String message = r.readLine();
+           while(!message.equals("End")){
+                conn.getNos().println(message);
+                message = r.readLine();
+           }
+           conn.getNos().println("End");
+           System.err.println("Client Singing Off");
+
+       } catch (ConnectException e) {
        }
-       System.out.println("Client Singing OFF");
-       Thread.sleep(1000);
-       soc.close();
    } 
 }
 
@@ -79,24 +84,31 @@ class ChatWindow extends JFrame{
        
 }
 
-class Connection{
+class Connection extends Thread{
       Socket soc;
       PrintWriter nos;
       BufferedReader nis;
       
-      public Connection(Socket soc) throws Exception{
-        this.soc = soc;
-        nos = new PrintWriter(soc.getOutputStream(),true);
-        nis = new BufferedReader(
-                  new InputStreamReader(
-                      soc.getInputStream()
-                  )
-        );
+      public Connection(Socket soc) throws IOException{ 
+        this.soc = soc; 
+        nos = new PrintWriter(soc.getOutputStream(), true);
+        nis = new BufferedReader(new InputStreamReader(soc.getInputStream()));      
       }
-      public Socket getsoc()
-      {
-        return soc;
+
+      public void run() {
+        try {
+            
+            String str= nis.readLine();
+            while(!str.equals("End")){
+                System.out.println(str);
+                str = nis.readLine();
+            }
+
+        } catch (Exception e) {
+        }
+        
       }
+
       public PrintWriter getNos()
       {
         return nos;
