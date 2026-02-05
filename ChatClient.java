@@ -99,8 +99,12 @@ class Connection extends Thread {
                 cw.getTa().append(str + "\n");
                 str = nis.readLine();
             }
+            soc.close();
+            cw.dispose();
+            System.out.println("Connection Closed");
 
         } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
     }

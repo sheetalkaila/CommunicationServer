@@ -15,7 +15,7 @@ public class ChatServer {
         md.start();
 
         int clientCount = 1;
-        for (int i = 1; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
 
             Socket soc = ss.accept();
             String threadName = "Client-" + clientCount;
@@ -83,8 +83,7 @@ class Connection extends Thread {
             }
             nos.println("End");
             ChatServer.al.remove(nos);
-            System.out.println(
-                    "Connection with " + soc.getInetAddress().getHostAddress() + " Terminated");
+            System.out.println("Connection with " + soc.getInetAddress().getHostAddress() + " Terminated");
 
         } catch (Exception e) {
 
